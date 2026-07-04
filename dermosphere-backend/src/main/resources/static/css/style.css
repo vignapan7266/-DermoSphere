@@ -1,0 +1,152 @@
+:root {
+    --primary: #2C3E50;
+    --secondary: #3498DB;
+    --danger: #E74C3C;
+    --success: #2ECC71;
+    --bg-color: #F8F9FA;
+    --card-bg: #FFFFFF;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.navbar {
+    background-color: var(--primary);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-primary { background-color: var(--secondary); color: white; }
+.btn-primary:hover { background-color: #2980B9; }
+.btn-danger { background-color: var(--danger); color: white; }
+
+/* Triage Queue Specifics */
+.triage-high { border-left: 5px solid var(--danger); }
+.triage-standard { border-left: 5px solid var(--success); }
+
+.heatmap-preview {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* =========================================
+   MAXIMIZED UI: Advanced Components
+========================================= */
+
+/* 1. Live Progress Bar */
+.progress-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    margin: 1rem 0;
+    overflow: hidden;
+    display: none; /* Hidden until triggered */
+}
+.progress-bar {
+    height: 20px;
+    background-color: var(--secondary);
+    width: 0%;
+    transition: width 0.2s ease-out;
+}
+.progress-text {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+/* 2. Chart.js Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* 3. Skeleton Loading Animation */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+}
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card { height: 350px; width: 100%; margin-bottom: 1rem; }
+
+/* 4. YouTube-Style Clinical Feed Grid */
+.feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+.feed-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+}
+.feed-card:hover {
+    transform: translateY(-5px);
+}
+.feed-thumbnail {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-bottom: 3px solid var(--primary);
+}
+.feed-thumbnail.high-risk {
+    border-bottom: 3px solid var(--danger);
+}
+.feed-content {
+    padding: 1.2rem;
+}
+.engagement-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
+    padding-top: 0.8rem;
+}

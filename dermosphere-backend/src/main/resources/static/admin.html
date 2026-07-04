@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DermoSphere - God Mode (Admin)</title>
+    <link rel="stylesheet" href="css/master.css">
+    <!-- Monaco Editor AMD loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <style>
+        :root {
+            /* Aggressive Admin Palette */
+            --clr-primary-glow: #ff003c; /* Cyberpunk Red */
+            --clr-secondary-glow: #ff5e00;
+            --shadow-neon: 0 0 20px rgba(255, 0, 60, 0.3);
+        }
+        
+        body { background: #050000; }
+        
+        .admin-header {
+            background: rgba(20, 0, 0, 0.9);
+            border-bottom: 1px solid var(--clr-primary-glow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .god-card {
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid rgba(255, 0, 60, 0.2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: inset 0 0 15px rgba(255, 0, 60, 0.1);
+        }
+
+        .editor-container {
+            height: 600px;
+            width: 100%;
+            border: 1px solid var(--clr-primary-glow);
+            border-radius: 8px;
+            overflow: hidden;
+            display: none; /* Hidden until Dev Mode unlocked */
+        }
+
+        /* Dev Mode CAPTCHA Wall */
+        .dev-wall {
+            background: rgba(20, 0, 0, 0.8);
+            border: 1px dashed var(--clr-primary-glow);
+            padding: 4rem;
+            text-align: center;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h2 style="color: var(--clr-primary-glow); font-family: 'Courier New', monospace;">[GOD_MODE] // SUPERUSER_ACCESS</h2>
+        <button onclick="window.location.replace('logout.html')" style="background: transparent; border: 1px solid var(--clr-primary-glow); color: var(--clr-primary-glow); padding: 0.5rem 1rem; cursor: pointer;">SYS_EXIT</button>
+    </header>
+
+    <div class="container">
+        <!-- System Telemetry -->
+        <h3 style="color: white; margin-top: 2rem;">Network Panopticon</h3>
+        <div class="stat-grid">
+            <div class="god-card">
+                <p style="color: #888; font-size: 0.8rem;">TOTAL IDENTITIES</p>
+                <h1 style="color: white;" id="statUsers">--</h1>
+            </div>
+            <div class="god-card">
+                <p style="color: #888; font-size: 0.8rem;">TOTAL INFERENCES</p>
+                <h1 style="color: white;" id="statScans">--</h1>
+            </div>
+            <div class="god-card">
+                <p style="color: #888; font-size: 0.8rem;">SYSTEM HEALTH</p>
+                <h1 style="color: #0f0;">OPTIMAL</h1>
+            </div>
+            <div class="god-card">
+                <p style="color: #888; font-size: 0.8rem;">AI LATENCY</p>
+                <h1 style="color: var(--clr-secondary-glow);">42ms</h1>
+            </div>
+        </div>
+
+        <!-- Developer Mode Injection Module -->
+        <h3 style="color: white; margin-top: 4rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">Developer Code Injection Module</h3>
+        
+        <div class="dev-wall" id="devWall">
+            <h2 style="color: var(--clr-primary-glow); margin-bottom: 1rem;">⚠️ RESTRICTED AREA ⚠️</h2>
+            <p style="color: #aaa; margin-bottom: 2rem;">Live modification of core microservice code requires manual override authorization.</p>
+            
+            <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+                <canvas id="devCaptchaCanvas" width="200" height="60" style="background: #000; border: 1px solid var(--clr-primary-glow);"></canvas>
+            </div>
+            
+            <input type="text" id="devCaptchaInput" placeholder="ENTER OVERRIDE HASH" style="background: #000; border: 1px solid var(--clr-primary-glow); color: var(--clr-primary-glow); padding: 0.8rem; width: 250px; text-align: center; font-family: monospace;">
+            <br>
+            <button onclick="unlockDevMode()" style="background: var(--clr-primary-glow); color: #000; font-weight: bold; padding: 0.8rem 2rem; border: none; margin-top: 1.5rem; cursor: pointer;">AUTHORIZE INJECTION</button>
+            <p id="devError" style="color: var(--clr-primary-glow); margin-top: 1rem; display: none;">AUTHORIZATION DENIED.</p>
+        </div>
+
+        <div id="editorUI" style="display: none;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                <select id="fileSelector" style="background: #000; color: var(--clr-primary-glow); border: 1px solid var(--clr-primary-glow); padding: 0.5rem;">
+                    <option value="main.py">ai-engine/main.py</option>
+                    <option value="train.py">ai-engine/train.py</option>
+                    <option value="gradcam.py">ai-engine/gradcam.py</option>
+                </select>
+                <button onclick="saveCode()" style="background: transparent; border: 1px solid #0f0; color: #0f0; padding: 0.5rem 1.5rem; cursor: pointer; font-family: monospace;">EXECUTE OVERWRITE</button>
+            </div>
+            
+            <div class="editor-container" id="monacoEditor"></div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Fetch Basic Telemetry
+        fetch('http://localhost:8081/api/v1/admin/telemetry', {
+            headers: { 'Authorization': 'Basic ' + sessionStorage.getItem('dermoAuthToken') }
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('statUsers').textContent = data.total_users;
+            document.getElementById('statScans').textContent = data.total_scans;
+        });
+
+        // 2. Specialized Red-Matrix CAPTCHA
+        let devCaptchaStr = "";
+        function generateDevCaptcha() {
+            const canvas = document.getElementById('devCaptchaCanvas');
+            const ctx = canvas.getContext('2d');
+            const chars = "0123456789ABCDEF"; // Hex style
+            devCaptchaStr = "";
+            
+            ctx.fillStyle = "#050000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Grid lines
+            ctx.strokeStyle = "rgba(255, 0, 60, 0.2)";
+            for(let i=0; i<canvas.width; i+=10) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
+            for(let i=0; i<canvas.height; i+=10) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke(); }
+
+            for (let i = 0; i < 6; i++) {
+                const char = chars.charAt(Math.floor(Math.random() * chars.length));
+                devCaptchaStr += char;
+                ctx.font = `bold ${24 + Math.random() * 8}px "Courier New"`;
+                ctx.fillStyle = "#ff003c";
+                ctx.save();
+                ctx.translate(25 + i * 25, 40);
+                ctx.rotate((Math.random() * 0.2) - 0.1);
+                ctx.fillText(char, 0, 0);
+                ctx.restore();
+            }
+        }
+        generateDevCaptcha();
+
+        let editorInstance;
+
+        // 3. Unlock Logic and Monaco Initialization
+        function unlockDevMode() {
+            const input = document.getElementById('devCaptchaInput').value.toUpperCase();
+            if (input === devCaptchaStr) {
+                document.getElementById('devWall').style.display = 'none';
+                document.getElementById('editorUI').style.display = 'block';
+                document.getElementById('monacoEditor').style.display = 'block';
+                initMonaco();
+            } else {
+                document.getElementById('devError').style.display = 'block';
+                generateDevCaptcha();
+                document.getElementById('devCaptchaInput').value = '';
+            }
+        }
+
+        function initMonaco() {
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
+            require(['vs/editor/editor.main'], function () {
+                editorInstance = monaco.editor.create(document.getElementById('monacoEditor'), {
+                    value: "# Fetching target architecture... standby.",
+                    language: 'python',
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    minimap: { enabled: true },
+                    fontFamily: 'Courier New',
+                    fontSize: 14
+                });
+                
+                // Define Custom Cyberpunk Red Theme
+                monaco.editor.defineTheme('godMode', {
+                    base: 'vs-dark', inherit: true,
+                    rules: [{ background: '050000' }],
+                    colors: { 'editor.background': '#050000', 'editorCursor.foreground': '#ff003c' }
+                });
+                monaco.editor.setTheme('godMode');
+                
+                loadFile(document.getElementById('fileSelector').value);
+            });
+        }
+
+        // 4. File I/O with Java Backend
+        document.getElementById('fileSelector').addEventListener('change', (e) => loadFile(e.target.value));
+
+        function loadFile(filename) {
+            fetch(`http://localhost:8081/api/v1/admin/dev/read?filename=${filename}`)
+                .then(res => res.json())
+                .then(data => editorInstance.setValue(data.content))
+                .catch(() => editorInstance.setValue("# Error: Remote filesystem access denied."));
+        }
+
+        function saveCode() {
+            const content = editorInstance.getValue();
+            const filename = document.getElementById('fileSelector').value;
+            
+            fetch('http://localhost:8081/api/v1/admin/dev/write', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename, content })
+            })
+            .then(res => res.text())
+            .then(msg => alert("SYS_MSG: " + msg));
+        }
+    </script>
+</body>
+</html>

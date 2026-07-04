@@ -1,0 +1,59 @@
+/* Senior-Level Glassmorphism Implementation */
+.glass-panel {
+    background: var(--clr-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-depth);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+    transform: skewX(-25deg);
+    animation: glassShine 6s infinite;
+}
+
+.btn-cyber {
+    background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(112,0,255,0.1));
+    border: 1px solid var(--clr-primary-glow);
+    color: var(--clr-primary-glow);
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+.btn-cyber:hover {
+    background: var(--clr-primary-glow);
+    color: var(--clr-space-dark);
+    box-shadow: 0 0 20px var(--clr-primary-glow);
+    transform: translateY(-2px);
+}
+
+.input-glass {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.input-glass:focus {
+    outline: none;
+    border-color: var(--clr-primary-glow);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}

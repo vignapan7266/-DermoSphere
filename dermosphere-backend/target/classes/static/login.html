@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DermoSphere - Login</title>
+    <link rel="stylesheet" href="css/master.css">
+    <link rel="stylesheet" href="css/glassmorphism.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .auth-panel {
+            width: 100%;
+            max-width: 450px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--clr-text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        /* Canvas CAPTCHA Styling */
+        .captcha-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: var(--radius-md);
+        }
+        #captchaCanvas {
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+        .refresh-captcha {
+            background: none; border: none;
+            color: var(--clr-primary-glow);
+            font-size: 1.5rem; cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .refresh-captcha:hover { transform: rotate(180deg); }
+    </style>
+</head>
+<body>
+    <div class="bg-overlay"></div>
+    
+    <div class="auth-wrapper">
+        <div class="glass-panel auth-panel animate-fade-up">
+            <h2 style="margin-bottom: 2rem; font-weight: 400;">Gateway <span style="color: var(--clr-primary-glow); font-weight: 700;">Access</span></h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Network Username</label>
+                    <input type="text" class="input-glass" id="loginUsername" required autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label>Security Clearance (Role)</label>
+                    <select class="input-glass" id="loginRole" required style="background: rgba(0,0,0,0.8);">
+                        <option value="PATIENT">Patient Dashboard</option>
+                        <option value="DOCTOR">Clinician Triage Queue</option>
+                        <option value="ADMIN">God Mode (Admin)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Encrypted Password</label>
+                    <input type="password" class="input-glass" id="loginPassword" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Human Verification</label>
+                    <div class="captcha-container">
+                        <canvas id="captchaCanvas" width="150" height="50"></canvas>
+                        <button type="button" class="refresh-captcha" onclick="generateCaptcha()" title="Reload Image">⟳</button>
+                    </div>
+                    <input type="text" class="input-glass" id="captchaInput" placeholder="Enter security code" required autocomplete="off">
+                </div>
+
+                <button type="submit" class="btn-cyber" style="width: 100%; margin-top: 1rem;">Authenticate Session</button>
+                <p id="errorMsg" style="color: var(--clr-danger); margin-top: 1rem; text-align: center; font-size: 0.9rem; display: none;"></p>
+            </form>
+            
+            <div style="text-align: center; margin-top: 2rem; font-size: 0.9rem; color: var(--clr-text-muted);">
+                Require network access? <a href="signup.html" style="color: var(--clr-primary-glow); text-decoration: none;">Initialize Registration</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/captcha-engine.js"></script>
+    <script src="js/auth-core.js"></script>
+</body>
+</html>

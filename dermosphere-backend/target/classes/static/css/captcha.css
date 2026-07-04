@@ -1,0 +1,31 @@
+.session-lock-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 15, 25, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.session-lock-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.lock-modal {
+    width: 400px;
+    text-align: center;
+}
+
+.lock-icon {
+    font-size: 3rem;
+    color: var(--clr-primary-glow);
+    margin-bottom: 1rem;
+    animation: pulseGlow 2s infinite;
+}

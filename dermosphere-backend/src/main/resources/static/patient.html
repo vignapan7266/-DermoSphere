@@ -1,0 +1,177 @@
+<!-- =========================================================================
+     FILE: web-client/patient.html
+     PURPOSE: Secured Glassmorphism UI for Patient Uploads and Chart Tracking
+     ========================================================================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DermoSphere | Secured Patient Dashboard</title>
+    
+    <!-- Design System Framework -->
+    <link rel="stylesheet" href="css/master.css">
+    <link rel="stylesheet" href="css/glassmorphism.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/captcha.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Chart.js Visualization Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    
+    <style>
+        .patient-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem 3rem; background: rgba(11, 15, 25, 0.6);
+            backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+            position: sticky; top: 0; z-index: 100;
+        }
+        
+        .upload-zone {
+            border: 2px dashed rgba(0, 240, 255, 0.3); border-radius: var(--radius-md);
+            padding: 3rem 2rem; text-align: center; transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.2); cursor: pointer; position: relative;
+        }
+        .upload-zone:hover {
+            border-color: var(--clr-primary-glow); background: rgba(0, 240, 255, 0.05);
+            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.1);
+        }
+        .upload-zone input[type="file"] {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; z-index: 2;
+        }
+        .upload-icon {
+            font-size: 3rem; color: var(--clr-primary-glow); margin-bottom: 1rem;
+            display: inline-block; animation: pulseGlow 3s infinite;
+        }
+        .telemetry-console {
+            background: #0b0f19; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-md); padding: 1rem;
+            font-family: 'Courier New', monospace; font-size: 0.85rem;
+            color: var(--clr-primary-glow); margin-top: 1.5rem; display: none;
+        }
+        
+        /* New Severity & Depth Tracker Components */
+        .severity-tracker {
+            display: flex; justify-content: space-between; background: rgba(0,0,0,0.4);
+            padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem;
+            border-left: 4px solid var(--clr-primary-glow);
+        }
+        .layer-indicator { display: flex; gap: 6px; margin-top: 10px; }
+        .skin-layer {
+            width: 35px; height: 12px; border-radius: 3px;
+            background: rgba(255,255,255,0.1); transition: all 0.5s ease;
+        }
+        .skin-layer.penetrated {
+            background: var(--clr-danger); box-shadow: 0 0 10px var(--clr-danger);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-overlay"></div>
+
+    <header class="patient-header animate-fade-up">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <svg class="svg-logo" viewBox="0 0 100 100" style="width: 40px; height: 40px;">
+                <polygon points="50,10 90,30 90,70 50,90 10,70 10,30" stroke="var(--clr-primary-glow)" stroke-width="4" fill="none" />
+                <circle cx="50" cy="50" r="15" fill="var(--clr-primary-glow)" />
+            </svg>
+            <h2 style="font-weight: 300; letter-spacing: 2px;">DERMO<span style="font-weight: 700; color: var(--clr-primary-glow);">SPHERE</span></h2>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <span style="font-size: 0.9rem; color: var(--clr-text-muted);" id="userIdentityBadge">System Active</span>
+            <button class="btn-cyber" style="border-color: var(--clr-danger); color: var(--clr-danger);" onclick="window.location.replace('logout.html')">Disconnect</button>
+        </div>
+    </header>
+
+    <main class="container grid-2" style="margin-top: 3rem;">
+        
+        <!-- MODULE 1: UPLOAD & COMPRESSION -->
+        <section class="glass-panel animate-fade-up delay-1">
+            <h3 style="margin-bottom: 1rem; font-weight: 500;">Diagnostic Input Pipeline</h3>
+            <p style="color: var(--clr-text-muted); font-size: 0.95rem; margin-bottom: 2rem;">
+                Upload a high-resolution dermoscopic image. HTML5 Canvas will compress the data prior to WebSocket transmission for zero-latency inference.
+            </p>
+            
+            <form id="uploadForm">
+                <div class="upload-zone" id="dropZone">
+                    <div class="upload-icon">⇪</div>
+                    <h4 style="margin-bottom: 0.5rem;">Drag & Drop Lesion Scan</h4>
+                    <input type="file" id="lesionImage" accept="image/jpeg, image/png, image/webp" required>
+                </div>
+                <div id="fileNameDisplay" style="margin-top: 1rem; font-size: 0.9rem; color: var(--clr-success); text-align: center; min-height: 1.5rem;"></div>
+                
+                <button type="submit" class="btn-cyber" id="uploadBtn" style="width: 100%; margin-top: 1.5rem;">Analyze via Neural Engine</button>
+            </form>
+            
+            <!-- Live Progress Telemetry -->
+            <div class="progress-container" id="progressContainer" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); margin-top: 2rem;">
+                <div class="progress-bar" id="progressBar" style="background: linear-gradient(90deg, var(--clr-secondary-glow), var(--clr-primary-glow)); box-shadow: 0 0 10px var(--clr-primary-glow);"></div>
+            </div>
+            <div class="telemetry-console" id="progressConsole">
+                > Initializing WSS:// connection...<br>
+                <span id="progressText" style="color: white;">Awaiting data stream...</span>
+            </div>
+        </section>
+
+        <!-- MODULE 2: INFERENCE RESULTS & CHARTS -->
+        <section class="glass-panel animate-fade-up delay-2" id="resultCard" style="display: none; grid-column: 1 / -1;">
+            
+            <!-- NEW: Longitudinal Severity & Skin Layer Tracker -->
+            <div class="severity-tracker animate-fade-up">
+                <div>
+                    <p style="color: var(--clr-text-muted); font-size: 0.85rem; text-transform: uppercase;">Longitudinal Severity Index</p>
+                    <h2 style="color: white; font-size: 2.5rem; margin-top: 0.5rem;" id="resSeverity">-- <span style="font-size: 1rem; color: #888;">/ 100</span></h2>
+                    <p style="font-size: 0.85rem; color: var(--clr-success); margin-top: 0.5rem;">Days since onset: <strong>Tracking Initiated</strong></p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="color: var(--clr-text-muted); font-size: 0.85rem; text-transform: uppercase;">Structural Depth Penetration</p>
+                    <div class="layer-indicator" id="layerIndicator">
+                        <!-- Rendered via patient.js -->
+                    </div>
+                    <p style="font-size: 0.75rem; color: #aaa; margin-top: 0.5rem;">Epidermis → Dermis → Subcutaneous</p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <!-- AI Metrics Interactive Graph -->
+                <div style="background: rgba(0,0,0,0.2); padding: 2rem; border-radius: var(--radius-md);">
+                    <h4 style="color: var(--clr-text-muted); text-transform: uppercase; font-size: 0.85rem;">Diagnostic Classification</h4>
+                    <h1 style="color: var(--clr-primary-glow); font-size: 2.5rem; margin: 0.5rem 0;" id="resClass">--</h1>
+                    
+                    <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; margin-top: 1rem;">
+                        <span style="font-size: 0.9rem; color: var(--clr-text-muted);">Triage Tier:</span>
+                        <span id="resTier" style="font-weight: 700; padding: 0.2rem 0.8rem; background: rgba(255,255,255,0.1); border-radius: 20px;">--</span>
+                    </div>
+                    
+                    <!-- Chart.js DOM Target -->
+                    <div class="chart-container" style="height: 250px; margin-top: 2rem; position: relative;">
+                        <canvas id="metricsChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Explainable AI (XAI) Grad-CAM -->
+                <div style="background: rgba(0,0,0,0.2); padding: 2rem; border-radius: var(--radius-md); display: flex; flex-direction: column;">
+                    <h4 style="color: var(--clr-text-muted); text-transform: uppercase; font-size: 0.85rem;">Grad-CAM XAI Spatial Mapping</h4>
+                    <p style="font-size: 0.85rem; color: #888; margin-top: 0.5rem; margin-bottom: 1rem;">
+                        Thermal intensity highlights structural anomalies extracted from the final convolutional layer.
+                    </p>
+                    <img id="resHeatmap" src="" alt="Grad-CAM Output" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); flex-grow: 1; object-fit: cover;">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.getElementById('lesionImage').addEventListener('change', (e) => {
+            const fileName = e.target.files[0] ? e.target.files[0].name : '';
+            document.getElementById('fileNameDisplay').textContent = fileName ? `Target acquired: ${fileName}` : '';
+        });
+        const storedUser = sessionStorage.getItem('dermoUsername');
+        if(storedUser) document.getElementById('userIdentityBadge').innerHTML = `Authenticated as: <strong>${storedUser}</strong>`;
+    </script>
+    <script src="js/patient.js"></script>
+    <script src="js/session-guard.js"></script> <!-- Ensure this exists for inactivity tracking -->
+</body>
+</html>

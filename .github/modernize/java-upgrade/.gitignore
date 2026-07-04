@@ -1,0 +1,17 @@
+# Python Environments & Logs
+ai-engine/venv/
+ai-engine/__pycache__/
+ai-engine/logs/
+
+# Block Massive Datasets and Models
+*.keras
+ai-engine/models/
+ai-engine/data/
+
+# Java Spring Boot
+core-gateway/target/
+.idea/
+*.class
+
+# OS Files
+.DS_Store

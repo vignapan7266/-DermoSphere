@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DermoSphere - Enterprise AI Inference</title>
+    <link rel="stylesheet" href="css/master.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        .intro-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo-wrapper {
+            margin-bottom: 2rem;
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        /* Pure CSS SVG Neural Mesh Logo */
+        .svg-logo { width: 120px; height: 120px; }
+        .svg-path {
+            stroke: var(--clr-primary-glow);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawPath 3s ease forwards;
+        }
+        
+        @keyframes drawPath { to { stroke-dashoffset: 0; } }
+
+        .skip-btn {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            color: var(--clr-text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .skip-btn:hover { color: white; }
+
+        .auth-actions {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+        .auth-actions.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-overlay"></div>
+
+    <div class="intro-container">
+        <div class="logo-wrapper animate-fade-up">
+            <svg class="svg-logo" viewBox="0 0 100 100">
+                <!-- Abstract Skin Matrix / Neural Net SVG -->
+                <polygon points="50,10 90,30 90,70 50,90 10,70 10,30" class="svg-path" />
+                <circle cx="50" cy="50" r="15" class="svg-path" />
+                <line x1="50" y1="10" x2="50" y2="35" class="svg-path" />
+                <line x1="10" y1="30" x2="37" y2="42" class="svg-path" />
+                <line x1="90" y1="30" x2="63" y2="42" class="svg-path" />
+            </svg>
+        </div>
+        
+        <h1 class="animate-fade-up delay-1" style="font-size: 3rem; letter-spacing: 4px; font-weight: 300;">
+            DERMO<span style="color: var(--clr-primary-glow); font-weight: 700;">SPHERE</span>
+        </h1>
+        <p class="animate-fade-up delay-2" style="color: var(--clr-text-muted); font-size: 1.1rem; margin-top: 1rem; max-width: 500px;">
+            Initializing Core Triage Gateway. Connecting to XLA-Accelerated MobileNetV2 Inference Engine...
+        </p>
+
+        <div class="auth-actions" id="actionPanel">
+            <button class="btn-cyber" onclick="window.location.href='login.html'">Secure Login</button>
+            <button class="btn-cyber" onclick="window.location.href='signup.html'" style="background: transparent; color: white; border-color: white;">Register</button>
+        </div>
+
+        <button class="skip-btn" id="skipBtn">Press 'Enter' to Skip</button>
+    </div>
+
+    <script src="js/intro.js"></script>
+</body>
+</html>
