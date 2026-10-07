@@ -18,13 +18,11 @@ import java.util.concurrent.TimeUnit;
 @EnableAsync
 public class AppConfig {
 
-    // 1. Reactive HTTP Client for zero-blocking AI network calls
     @Bean
     public WebClient webClient() {
-        return WebClient.builder().build();
+        return WebClient.builder().build(); //[cite: 39]
     }
 
-    // 2. Custom Async Thread Pool (Prevents HTTP thread exhaustion during heavy AI loads)
     @Bean(name = "asyncTaskExecutor")
     public Executor asyncTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -33,16 +31,26 @@ public class AppConfig {
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("AsyncThread-");
         executor.initialize();
-        return executor;
+        return executor; //[cite: 39]
     }
 
-    // 3. Caffeine RAM Cache for the Triage Queue
+    @Bean(name = "auditTaskExecutor")
+    public Executor auditTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("AuditLogger-");
+        executor.initialize();
+        return executor; //[cite: 40]
+    }
+
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager("triageQueue");
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(5, TimeUnit.MINUTES) // Auto-refresh cache every 5 mins
+                .expireAfterWrite(5, TimeUnit.MINUTES)
                 .maximumSize(1000));
-        return cacheManager;
+        return cacheManager; //[cite: 39]
     }
 }

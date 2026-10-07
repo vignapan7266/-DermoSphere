@@ -9,9 +9,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
-import java.io.IOException;
+import reactor.core.publisher.Mono;
 
 @Service
 public class AiBridgeService {
@@ -25,25 +24,50 @@ public class AiBridgeService {
         this.webClient = webClient;
     }
 
-    // ADVANCED: Returns a Reactive Mono, completely bypassing thread-blocking IO
-    public Mono<AiResponseDto> processImageInferenceReactive(MultipartFile file) throws IOException {
-        
-        ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
-            @Override
-            public String getFilename() {
-                return file.getOriginalFilename();
-            }
-        };
+    public Mono<AiResponseDto> processImageInferenceReactive(MultipartFile file) {
+        return processImageInferenceReactive(file, "0.0", "0", "0");
+    }
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", fileResource);
+    public Mono<AiResponseDto> processImageInferenceReactive(
+            MultipartFile file,
+            String ageScaled,
+            String sexEncoded,
+            String anatomyEncoded
+    ) {
+        try {
+            ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            };
 
-        return webClient.post()
-                .uri(aiServiceUrl)
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(AiResponseDto.class)
-                .doOnError(e -> System.err.println("AI Microservice Connection Failed: " + e.getMessage()));
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", fileResource);
+            body.add("age_scaled", ageScaled != null ? ageScaled : "0.0");
+            body.add("sex_encoded", sexEncoded != null ? sexEncoded : "0");
+            body.add("anatomy_encoded", anatomyEncoded != null ? anatomyEncoded : "0");
+
+            return webClient
+                    .post()
+                    .uri(aiServiceUrl)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .bodyValue(body)
+                    .exchangeToMono(response -> {
+                        if (response.statusCode().is2xxSuccessful()) {
+                            return response.bodyToMono(AiResponseDto.class);
+                        }
+                        return response
+                                .bodyToMono(String.class)
+                                .defaultIfEmpty("Unknown AI service error")
+                                .flatMap(errorBody -> Mono.error(
+                                        new RuntimeException("AI Service Error: " + errorBody)
+                                ));
+                    });
+        } catch (Exception e) {
+            return Mono.error(
+                    new RuntimeException("Failed to prepare AI request: " + e.getMessage(), e)
+            );
+        }
     }
 }

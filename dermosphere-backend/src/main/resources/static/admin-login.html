@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DermoSphere | Overlord Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #020617; color: #06b6d4; font-family: 'JetBrains Mono', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { border: 1px solid #334155; background: #0f172a; padding: 3rem; border-radius: 12px; box-shadow: 0 0 30px rgba(6, 182, 212, 0.1); width: 350px; text-align: center; }
+        input { width: 100%; padding: 12px; margin-top: 20px; background: #020617; border: 1px solid #334155; color: white; font-family: 'JetBrains Mono', monospace; border-radius: 6px; box-sizing: border-box; transition: 0.3s; }
+        input:focus { outline: none; border-color: #06b6d4; box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
+        button { width: 100%; padding: 12px; margin-top: 30px; background: transparent; border: 1px solid #06b6d4; color: #06b6d4; font-family: 'JetBrains Mono', monospace; font-weight: bold; cursor: pointer; transition: 0.3s; border-radius: 6px; }
+        button:hover { background: #06b6d4; color: #020617; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2 style="margin-top: 0; letter-spacing: 2px;">ROOT_ACCESS</h2>
+        <p style="color: #64748b; font-size: 0.9rem;">Identify as System Administrator</p>
+        
+        <input type="text" id="admin-user" placeholder="Admin Identifier (Letters Only)" autocomplete="off" oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
+        <input type="password" id="admin-pass" placeholder="Master Key">
+        
+        <button onclick="attemptAdminAuth()">INITIALIZE</button>
+        <p id="error-msg" style="color: #ef4444; margin-top: 15px; font-size: 0.8rem; height: 15px;"></p>
+    </div>
+
+    <script>
+        async function attemptAdminAuth() {
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+            const errorMsg = document.getElementById('error-msg');
+            
+            if (!/^[a-zA-Z]+$/.test(u)) {
+                errorMsg.innerText = "ERR: Username must contain letters only.";
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/v1/auth/admin-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionStorage.setItem('dermoAuthToken', data.token);
+                    window.location.replace('admin-godmode.html');
+                } else {
+                    errorMsg.innerText = "ERR: Invalid Credentials or Clearance.";
+                }
+            } catch (err) {
+                errorMsg.innerText = "ERR: Authentication Service Offline.";
+            }
+        }
+        
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') attemptAdminAuth();
+        });
+    </script>
+</body>
+</html>

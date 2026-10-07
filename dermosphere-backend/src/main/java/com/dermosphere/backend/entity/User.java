@@ -1,8 +1,7 @@
+
 package com.dermosphere.backend.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -12,18 +11,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    private String firstName;
-    private String lastName;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    // NEW FIELD: Manages access to the restricted "Hide" module
+    @Column(name = "metrics_access_status")
+    private String metricsAccessStatus = "REVOKED";
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -31,7 +30,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     // Standard Getters and Setters
     public Long getId() { return id; }
@@ -42,11 +41,10 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
     public Set<Role> getRoles() { return roles; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }
+    
+    // NEW GETTER/SETTER
+    public String getMetricsAccessStatus() { return metricsAccessStatus; }
+    public void setMetricsAccessStatus(String metricsAccessStatus) { this.metricsAccessStatus = metricsAccessStatus; }
 }

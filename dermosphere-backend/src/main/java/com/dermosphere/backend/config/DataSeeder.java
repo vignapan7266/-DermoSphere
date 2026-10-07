@@ -5,77 +5,51 @@ import com.dermosphere.backend.entity.User;
 import com.dermosphere.backend.repository.RoleRepository;
 import com.dermosphere.backend.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.Collections;
 
-@Configuration
-public class DataSeeder {
+@Component
+public class DataSeeder implements CommandLineRunner {
 
-    @Bean
-    public CommandLineRunner initDatabase(
-            UserRepository userRepository, 
-            RoleRepository roleRepository, 
-            PasswordEncoder passwordEncoder) {
-        
-        return args -> {
-            // 1. Safely initialize Roles (Fail-safe in case schema.sql was skipped)
-            Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> {
-                Role r = new Role();
-                r.setName("ROLE_ADMIN");
-                return roleRepository.save(r);
-            });
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-            Role doctorRole = roleRepository.findByName("ROLE_DOCTOR").orElseGet(() -> {
-                Role r = new Role();
-                r.setName("ROLE_DOCTOR");
-                return roleRepository.save(r);
-            });
+    public DataSeeder(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder; //[cite: 41]
+    }
 
-            Role patientRole = roleRepository.findByName("ROLE_PATIENT").orElseGet(() -> {
-                Role r = new Role();
-                r.setName("ROLE_PATIENT");
-                return roleRepository.save(r);
-            });
+    @Override
+    public void run(String... args) {
+        Role adminRole = createRoleIfNotFound("ROLE_ADMIN");
+        Role patientRole = createRoleIfNotFound("ROLE_PATIENT");
+        Role doctorRole = createRoleIfNotFound("ROLE_DOCTOR"); //[cite: 41]
 
-            // 2. Create the Default "God-Mode" Admin User
-            if (userRepository.findByUsername("admin").isEmpty()) {
-                User admin = new User();
-                admin.setUsername("admin");
-                // The password must be hashed before saving to the database
-                admin.setPassword(passwordEncoder.encode("admin123")); 
-                admin.setEmail("admin@dermosphere.com");
-                admin.setRoles(Set.of(adminRole));
-                
-                userRepository.save(admin);
-                System.out.println("[SYSTEM BOOTSTRAP] Default Admin created successfully.");
-            }
+        createUserIfNotFound("admin", "admin@dermosphere.com", "admin123", adminRole);
+        createUserIfNotFound("patient", "patient@dermosphere.com", "password", patientRole);
+        createUserIfNotFound("doctor", "doctor@dermosphere.com", "password", doctorRole); //[cite: 41]
+    }
 
-            // 3. Create a Default Non-Admin User (Clinician)
-            if (userRepository.findByUsername("doctor1").isEmpty()) {
-                User doctor = new User();
-                doctor.setUsername("doctor1");
-                doctor.setPassword(passwordEncoder.encode("doctor123"));
-                doctor.setEmail("doctor1@dermosphere.com");
-                doctor.setRoles(Set.of(doctorRole));
-                
-                userRepository.save(doctor);
-                System.out.println("[SYSTEM BOOTSTRAP] Default Doctor created successfully.");
-            }
-            
-            // 4. Create a Default Patient
-            if (userRepository.findByUsername("patient1").isEmpty()) {
-                User patient = new User();
-                patient.setUsername("patient1");
-                patient.setPassword(passwordEncoder.encode("patient123"));
-                patient.setEmail("patient1@dermosphere.com");
-                patient.setRoles(Set.of(patientRole));
-                
-                userRepository.save(patient);
-                System.out.println("[SYSTEM BOOTSTRAP] Default Patient created successfully.");
-            }
-        };
+    private Role createRoleIfNotFound(String name) {
+        return roleRepository.findByName(name).orElseGet(() -> {
+            Role role = new Role();
+            role.setName(name);
+            return roleRepository.save(role);
+        }); //[cite: 41]
+    }
+
+    private void createUserIfNotFound(String username, String email, String password, Role role) {
+        if (userRepository.findByUsername(username).isEmpty()) {
+            User user = new User();
+            user.setUsername(username);
+            user.setEmail(email);
+            user.setPassword(passwordEncoder.encode(password));
+            user.setRoles(Collections.singleton(role));
+            userRepository.save(user); //[cite: 41]
+        }
     }
 }

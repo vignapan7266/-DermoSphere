@@ -6,7 +6,7 @@ public class AiResponseDto {
     private String status;
     private String prediction;
     private Double confidence;
-    private String triage_tier;
+    private Integer triage_tier;
     private String heatmap_path;
     private Map<String, Double> metrics;
 
@@ -17,8 +17,8 @@ public class AiResponseDto {
     public void setPrediction(String prediction) { this.prediction = prediction; }
     public Double getConfidence() { return confidence; }
     public void setConfidence(Double confidence) { this.confidence = confidence; }
-    public String getTriage_tier() { return triage_tier; }
-    public void setTriage_tier(String triage_tier) { this.triage_tier = triage_tier; }
+    public Integer getTriage_tier() { return triage_tier; }
+    public void setTriage_tier(Integer triage_tier) { this.triage_tier = triage_tier; }
     public String getHeatmap_path() { return heatmap_path; }
     public void setHeatmap_path(String heatmap_path) { this.heatmap_path = heatmap_path; }
     public Map<String, Double> getMetrics() { return metrics; }

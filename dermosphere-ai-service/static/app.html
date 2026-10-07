@@ -1,0 +1,103 @@
+<!-- =========================================================================
+     FILE: src/main/resources/static/app.html
+     PURPOSE: The Master Single-Page Application (SPA) governing the 5 modules
+     ========================================================================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DermoSphere | Portal</title>
+    <link rel="stylesheet" href="css/theme-medical.css">
+    <link rel="stylesheet" href="css/app-layout.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <nav class="nav-sidebar">
+            <div class="nav-brand">DermoSphere</div>
+            <button class="nav-btn active" onclick="routeTo('pane-home')"> Analysis Portal</button>
+            <button class="nav-btn" onclick="routeTo('pane-history')"> History Dashboard</button>
+            <button class="nav-btn" onclick="routeTo('pane-info')"> Input Constraints</button>
+            <button class="nav-btn danger" onclick="triggerLogout()"> Terminate Session</button>
+        </nav>
+
+        <!-- MAIN DYNAMIC CONTENT PANE -->
+        <main class="content-pane">
+            
+            <!-- MODULE 1: HOME (Inference Engine) -->
+            <section id="pane-home" class="pane-view active">
+                <div class="upload-card">
+                    <h2 style="color: var(--accent-purple); font-size: 2.2rem; margin-bottom: 1rem;">Dermatological Input Node</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Awaiting visual input. Verify image parameters via <a href="#" onclick="routeTo('pane-info')" style="color: var(--med-teal); font-weight: bold;">Option 3</a> to ensure algorithmic accuracy.
+                    </p>
+                    
+                    <input type="file" id="lesion-upload" accept="image/jpeg, image/png" style="margin-bottom: 2rem; width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px;">
+                    <button class="clinical-btn" style="width: 100%; font-size: 1.2rem; padding: 18px;" onclick="initiateVisualScanSequence()">Initialize Neural Processing</button>
+                    
+                    <!-- Advanced Visual Processing Output -->
+                    <div id="processing-matrix" style="display: none; margin-top: 3rem; text-align: left;">
+                        <h4 id="status-readout" style="font-family: monospace; color: var(--accent-purple); font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px;">> System Ready...</h4>
+                        
+                        <div class="scanner-viewport" id="scanner-box">
+                            <img id="scanner-preview" class="scanner-target-image" src="" alt="Scan Target">
+                            <div class="scanner-grid" id="scanner-grid"></div>
+                            <div class="scanner-laser" id="scanner-laser"></div>
+                        </div>
+                        
+                        <!-- Results Injector -->
+                        <div id="final-results" style="display: none; margin-top: 20px; padding: 20px; background: rgba(42, 157, 143, 0.1); border-radius: 10px; border-left: 5px solid var(--med-teal);">
+                            <h2 style="color: var(--med-teal-deep); margin-bottom: 10px;">Diagnostic Output</h2>
+                            <p id="res-classification" style="font-size: 1.5rem; font-weight: bold;"></p>
+                            <p id="res-accuracy" style="color: var(--text-secondary);"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE 2: DASHBOARD HISTORY -->
+            <section id="pane-history" class="pane-view">
+                <h2 style="font-size: 2.2rem; color: var(--med-teal-deep); margin-bottom: 1rem;">Chronological Ledger</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Retaining maximum of 10 structural assessments. Click to expand.</p>
+                
+                <div id="history-container">
+                    <!-- Javascript populates history dynamically -->
+                </div>
+            </section>
+
+            <!-- MODULE 3: INFO & REQUIREMENTS -->
+            <section id="pane-info" class="pane-view">
+                <h2 style="font-size: 2.2rem; color: var(--med-teal-deep); margin-bottom: 2rem;">Algorithmic Constraints</h2>
+                
+                <div style="display: flex; gap: 2rem; margin-bottom: 3rem;">
+                    <div style="flex: 1; background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--shadow-soft); border-top: 5px solid var(--med-teal);">
+                        <h3 style="margin-bottom: 1rem;">1. Illumination Quality</h3>
+                        <p style="color: green; font-weight: bold;">✔ Correct: Diffused, ambient lighting.</p>
+                        <p style="color: red; font-weight: bold; margin-bottom: 1rem;">✘ Wrong: Harsh camera flash causing specular glare.</p>
+                    </div>
+                    <div style="flex: 1; background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--shadow-soft); border-top: 5px solid var(--med-peach);">
+                        <h3 style="margin-bottom: 1rem;">2. Spatial Resolution</h3>
+                        <p style="color: green; font-weight: bold;">✔ Correct: Macro-lens, sharply focused.</p>
+                        <p style="color: red; font-weight: bold; margin-bottom: 1rem;">✘ Wrong: Digital zoom resulting in pixelation noise.</p>
+                    </div>
+                </div>
+                
+                <div style="background: white; padding: 3rem; border-radius: 16px; box-shadow: var(--shadow-soft);">
+                    <h3 style="color: var(--accent-purple); margin-bottom: 1rem;">Pre-Flight Validation Check</h3>
+                    <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Upload an image strictly to test if it meets the resolution and lighting constraints before inference.</p>
+                    <input type="file" id="validation-file" accept="image/jpeg, image/png">
+                    
+                    <div id="validation-result" style="display: none; margin-top: 2rem; padding: 2rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px;">
+                        <h4 style="color: #166534; font-size: 1.2rem; margin-bottom: 10px;">[SUCCESS] Topological parameters met.</h4>
+                        </div>
+                </div>
+            </section>
+
+
+        </main>
+    </div>
+
+    <script src="js/app-logic.js"></script>
+</body>
+</html>

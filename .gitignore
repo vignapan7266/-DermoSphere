@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.env
+
+# Python generated files
+.ipynb_checkpoints/
+*.log
+
+# ML generated files
+dermosphere-ai-service/graphs/
+dermosphere-ai-service/latest_heatmap.jpg
+dermosphere-ai-service/static/uploads/
+dermosphere-ai-service/data/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Java / Maven
+dermosphere-backend/target/
+*.class
+
+# Local database configuration
+dermosphere-backend/src/main/resources/application-local.properties
+
+# Temporary files
+*.tmpdermosphere-ai-service/static/latest_heatmap.jpg

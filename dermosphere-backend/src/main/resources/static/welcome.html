@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DermoSphere | Welcome</title>
+    <style>
+        body {
+            margin: 0; overflow: hidden; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            /* Exciting yet non-disturbing radial gradient */
+            background: radial-gradient(circle at center, var(--med-peach) 0%, var(--med-coral) 50%, var(--accent-purple) 100%);
+            font-family: 'Inter', sans-serif;
+            --med-peach: #F4A261; --med-coral: #E76F51; --accent-purple: #6A4C93;
+        }
+        
+        .welcome-wrapper {
+            text-align: center; color: white;
+            opacity: 0; transform: scale(0.9);
+            animation: immersiveWelcome 4.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+        
+        h1 { font-size: 5rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 1rem; text-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .sub-text { font-size: 1.5rem; font-weight: 300; opacity: 0.9; letter-spacing: 2px; }
+        
+        /* Particle effect background overlay */
+        .particles { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.2) 2px, transparent 2px); background-size: 40px 40px; animation: panBg 20s linear infinite; opacity: 0.3; pointer-events: none; }
+
+        @keyframes immersiveWelcome { 
+            0% { opacity: 0; transform: scale(0.85); filter: blur(10px); } 
+            20% { opacity: 1; transform: scale(1); filter: blur(0px); } 
+            80% { opacity: 1; transform: scale(1.05); filter: blur(0px); } 
+            100% { opacity: 0; transform: scale(1.1); filter: blur(5px); } 
+        }
+        @keyframes panBg { 0% { background-position: 0 0; } 100% { background-position: 400px 400px; } }
+    </style>
+</head>
+<body>
+    <div class="particles"></div>
+    <div class="welcome-wrapper">
+        <h1>Welcome, <span id="display-name" style="color: #FFD166;"></span>.</h1>
+        <div class="sub-text">Calibrating Diagnostic Interfaces...</div>
+    </div>
+
+    <script>
+        const storedName = sessionStorage.getItem('dermoUsername') || "Explorer";
+        document.getElementById('display-name').innerText = storedName;
+        
+        // Exact 5-second redirect
+        setTimeout(() => {
+            window.location.replace('app.html');
+        }, 5000);
+    </script>
+</body>
+</html>

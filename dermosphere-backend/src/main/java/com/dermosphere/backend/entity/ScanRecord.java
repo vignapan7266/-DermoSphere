@@ -40,7 +40,7 @@ public class ScanRecord {
     private Double confidenceScore;
     
     @Column(nullable = false)
-    private String triageTier = "STANDARD"; 
+    private Integer triageTier = 1; 
     
     private String heatmapPath;
     
@@ -82,8 +82,8 @@ public class ScanRecord {
     public Double getConfidenceScore() { return confidenceScore; }
     public void setConfidenceScore(Double confidenceScore) { this.confidenceScore = confidenceScore; }
     
-    public String getTriageTier() { return triageTier; }
-    public void setTriageTier(String triageTier) { this.triageTier = triageTier; }
+    public Integer getTriageTier() { return triageTier; }
+    public void setTriageTier(Integer triageTier) { this.triageTier = triageTier; }
     
     public String getHeatmapPath() { return heatmapPath; }
     public void setHeatmapPath(String heatmapPath) { this.heatmapPath = heatmapPath; }
