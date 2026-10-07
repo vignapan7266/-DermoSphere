@@ -32,3 +32,4 @@ dermosphere-backend/src/main/resources/application-local.properties
 # Temporary files
 *.tmpdermosphere-ai-service/static/latest_heatmap.jpg
 dermosphere-ai-service/static/latest_heatmap.jpg
+dermosphere-backend/.maven/
